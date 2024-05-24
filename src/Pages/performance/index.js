@@ -5,8 +5,7 @@ const Performance = () => {
     return (
         <>
             <HeaderSection
-                heading={'Quizzes and Results'}
-                subHeading={'Perfomance trends'}
+                heading={'Quiz documents'}
             />
             <QuizzesAndResults/>
         </>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaEdit, FaArchive, FaTrash, FaEye } from 'react-icons/fa';
+import { FaEye, FaFilePdf, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import UssdNavbar from './UssdNavBar';
+import { PDFDocument, rgb } from 'pdf-lib';
 
 Modal.setAppElement('#__next'); // Ensure this matches the root element of your Next.js app
 
@@ -14,6 +15,9 @@ const ManageQuiz = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null); // State to hold the selected PDF file
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -52,16 +56,93 @@ const ManageQuiz = () => {
       setQuestions(questions.filter(q => q.id !== questionToDelete));
       setIsDeleteModalOpen(false);
       setQuestionToDelete(null);
+      showFeedbackMessage('Question deleted successfully.');
     } catch (err) {
       console.error('Error deleting question:', err);
       setError('Failed to delete question');
       setIsDeleteModalOpen(false);
+      showFeedbackMessage('Failed to delete question. Please try again.');
     }
   };
 
   const cancelDeleteQuestion = () => {
     setIsDeleteModalOpen(false);
     setQuestionToDelete(null);
+  };
+
+  const handleFileChange = (event) => {
+    setPdfFile(event.target.files[0]);
+  };
+
+  const generatePDF = async () => {
+    try {
+      const currentDate = new Date().toISOString().split('T')[0]; 
+      const filename = `questions_and_answers_${currentDate}.pdf`;
+
+      // Create a new PDF document
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage();
+
+      // Add text to the PDF
+      const { width, height } = page.getSize();
+      const fontSize = 20;
+      const text = "Questions and Answers:\n\n";
+      const font = await pdfDoc.embedFont('Helvetica');
+      const textWidth = font.widthOfTextAtSize(text.replace(/\n/g, ' '), fontSize); 
+      page.drawText(text, {
+        x: (width - textWidth) / 2,
+        y: height - 4 * fontSize,
+        size: fontSize,
+        font: font,
+        color: rgb(0, 0, 0),
+      });
+
+      // Append questions and answers to the PDF
+      questions.forEach((question, index) => {
+        const questionText = `${index + 1}. ${question.text}\n`;
+        const answersText = question.answers.map(answer => `   - ${answer.text}`).join('\n');
+        const fullText = `${questionText}${answersText}\n\n`;
+        const fullTextWithoutNewlines = fullText.replace(/\n/g, ' '); 
+        page.drawText(fullTextWithoutNewlines, {
+          x: 50,
+          y: height - (5 + (index + 1) * 3) * fontSize,
+          size: fontSize,
+          font: font,
+          color: rgb(0, 0, 0),
+        });
+      });
+
+      // Save the PDF buffer
+      const pdfBytes = await pdfDoc.save();
+
+      // Upload the PDF buffer to the server
+      const formData = new FormData();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      formData.append('pdf', blob, filename);
+
+      const response = await axios.post('http://localhost:8080/api/documents/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      console.log('PDF uploaded successfully:', response.data);
+      showFeedbackMessage('PDF generated and uploaded successfully.');
+    } catch (error) {
+      console.error('Error generating or uploading PDF:', error);
+      showFeedbackMessage('Failed to generate or upload PDF. Please try again.');
+    }
+  };
+
+  const showFeedbackMessage = (message) => {
+    setFeedbackMessage(message);
+    setShowFeedback(true);
+    setTimeout(() => {
+      setShowFeedback(false);
+    }, 6000);
+  };
+
+  const hideFeedbackMessage = () => {
+    setShowFeedback(false);
   };
 
   if (loading) {
@@ -73,45 +154,62 @@ const ManageQuiz = () => {
   }
 
   return (
-      <>
-        <UssdNavbar />
+    <>
+      <UssdNavbar />
       <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
         <h1 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>Manage Questions and Answers</h1>
-        {questions.length === 0 ? (
-          <p style={{ textAlign: 'center', fontSize: '18px' }}>No questions found</p>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>#</th>
-                <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>Question</th>
-                <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {questions.map((question, index) => (
-                <tr key={question.id}>
-                  <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px', textAlign: 'center' }}>{index + 1}</td>
-                  <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px' }}>{question.text}</td>
-                  <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px', textAlign: 'center' }}>
-                    <button 
-                      style={{ margin: '0 5px', padding: '5px', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff' }}
-                      onClick={() => handleSeeAnswers(question)}
-                    >
-                      <FaEye />
-                    </button>
-                    <button 
-                      style={{ margin: '0 5px', padding: '5px', cursor: 'pointer', background: 'none', border: 'none', color: '#dc3545' }}
-                      onClick={() => handleDeleteQuestion(question.id)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+        <button
+          onClick={generatePDF}
+          style={{
+            display: 'block',
+            margin: '0 auto 20px',
+            padding: '10px 20px',
+            cursor: 'pointer',
+            background: '#000000',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+          }}
+        >
+          <FaFilePdf style={{ marginRight: '5px' }} /> Generate PDF
+        </button>
+        <div id="pdf-content">
+          {questions.length === 0 ? (
+            <p style={{ textAlign: 'center', fontSize: '18px' }}>No questions found</p>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>#</th>
+                  <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>Question</th>
+                  <th style={{ borderBottom: '2px solid #ccc', padding: '10px 5px' }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {questions.map((question, index) => (
+                  <tr key={question.id}>
+                    <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px', textAlign: 'center' }}>{index + 1}</td>
+                    <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px' }}>{question.text}</td>
+                    <td style={{ borderBottom: '1px solid #ccc', padding: '10px 5px', textAlign: 'center' }}>
+                      <button
+                        style={{ margin: '0 5px', padding: '5px', cursor: 'pointer', background: 'none', border: 'none', color: '#007bff' }}
+                        onClick={() => handleSeeAnswers(question)}
+                      >
+                        <FaEye />
+                      </button>
+                      <button
+                        style={{ margin: '0 5px', padding: '5px', cursor: 'pointer', background: 'none', border: 'none', color: '#dc3545' }}
+                        onClick={() => handleDeleteQuestion(question.id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
         {selectedQuestion && (
           <Modal
             isOpen={isModalOpen}
@@ -129,18 +227,18 @@ const ManageQuiz = () => {
                 maxWidth: '600px',
                 width: '90%',
                 boxSizing: 'border-box',
-                overflow: 'auto'
+                overflow: 'auto',
               },
               overlay: {
-                backgroundColor: 'rgba(0, 0, 0, 0.75)'
-              }
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              },
             }}
           >
             <h2>Answers for: {selectedQuestion.text}</h2>
             <ul>
               {selectedQuestion.answers.map((answer, index) => (
                 <li key={answer.id}>
-                  {String} {answer.text} {answer.isCorrect && <strong>(Correct)</strong>}
+                  {answer.text} {answer.isCorrect && <strong>(Correct)</strong>}
                 </li>
               ))}
             </ul>
@@ -166,15 +264,15 @@ const ManageQuiz = () => {
                 maxWidth: '400px',
                 width: '90%',
                 boxSizing: 'border-box',
-                overflow: 'auto'
+                overflow: 'auto',
               },
               overlay: {
-                backgroundColor: 'rgba(0, 0, 0, 0.75)'
-              }
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+              },
             }}
           >
-            <h2 style={{marginBottom: '10px'}}>Confirm Delete</h2>
-            <p style={{color: 'red'}}>Are you sure you want to delete this question and all its answers?</p>
+            <h2 style={{ marginBottom: '10px' }}>Confirm Delete</h2>
+            <p style={{ color: 'red' }}>Are you sure you want to delete this question and all its answers?</p>
             <button onClick={confirmDeleteQuestion} style={{ marginRight: '10px', padding: '10px 20px', cursor: 'pointer', backgroundColor: '#dc3545', color: 'white', marginTop: '20px' }}>
               Confirm
             </button>
@@ -183,9 +281,16 @@ const ManageQuiz = () => {
             </button>
           </Modal>
         )}
+        {showFeedback && (
+          <div style={{ position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#000000', color: '#fff', padding: '10px 20px', borderRadius: '5px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)', zIndex: '9999' }}>
+            {feedbackMessage}
+            <button onClick={hideFeedbackMessage} style={{ marginLeft: '10px', backgroundColor: 'transparent', border: 'none', color: '#fff', cursor: 'pointer' }}>X</button>
+          </div>
+        )}
       </div>
-      </>
+    </>
   );
 };
 
 export default ManageQuiz;
+

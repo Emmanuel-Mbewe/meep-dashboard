@@ -1,8 +1,8 @@
-import Layout from '@meep/components/layout';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import SubtopicCard from 'src/Pages/manage/SubtopicCard';
+import Layout from '@/ui-components/layout';
+import SubtopicCard from '@/Pages/manage/SubtopicCard';
 
 const subtopicsStyle = {
   display: 'flex',

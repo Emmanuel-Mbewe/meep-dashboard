@@ -1,7 +1,7 @@
-import Layout from '@meep/components/layout';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Layout from '@/ui-components/layout';
 
 const containerStyle = {
   maxWidth: '800px',

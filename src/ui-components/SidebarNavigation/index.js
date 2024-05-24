@@ -19,7 +19,7 @@ const SidebarNavigation = ({
       </button>
       <div className={styles['logo-container']}>
         <Logo />
-        <div className={styles['logo-explain']}>Malawi Edu Enhance Platform</div>
+        <div style={{textAlign:'center', marginTop:'10px'}} className={styles['logo-explain']}>Malawi Education Enhancement Platform</div>
       </div>
       <ul className={styles["sidebar-container"]}>
         {routes.map((page, index) => (

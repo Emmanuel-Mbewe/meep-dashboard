@@ -1,24 +1,73 @@
-import React, { useState } from 'react';
-import Head from 'next/head'; // Correctly import Head from next/head
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Head from 'next/head';
 import DataCard from "@/ui-components/DataCard";
 import ActionButton from "@/ui-components/ActionButton";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import Section from "@/ui-components/Section";
-import Link from "next/link"; // Import Link from Next.js
+import Link from "next/link";
 
 import QuizzesAndResults from "../../components/QuizzesAndResults";
 import Teacher_Modal from "@/ui-components/Teacher_Modal";
 import HeaderSection from "@/ui-components/HeaderSection";
 
-export default function Dashboard() {
-  const [teacher_modal, setTeacher_modal] = useState(false);
+const Dashboard = () => {
+  const [teacherModal, setTeacherModal] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [videoCount, setVideoCount] = useState(0);
+  const [studentCount, setStudentCount] = useState(0);
+  const [documentCount, setDocumentCount] = useState(0); // New state for document count
+  const [isSubjectsVisible, setIsSubjectsVisible] = useState(false);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/courses');
+        setCourses(response.data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    const fetchVideoCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/content/videos/count');
+        setVideoCount(response.data.count);
+      } catch (error) {
+        console.error('Error fetching video count:', error);
+      }
+    };
+
+    const fetchStudentCount = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/students/count');
+        setStudentCount(response.data.count);
+      } catch (error) {
+        console.error('Error fetching student count:', error);
+      }
+    };
+
+    const fetchDocumentCount = async () => { // Fetch document count
+      try {
+        const response = await axios.get('http://localhost:8080/api/documents/count');
+        setDocumentCount(response.data.count);
+      } catch (error) {
+        console.error('Error fetching document count:', error);
+      }
+    };
+
+    fetchCourses();
+    fetchVideoCount();
+    fetchStudentCount();
+    fetchDocumentCount(); // Call fetchDocumentCount
+  }, []);
 
   const handleClose = () => {
-    setTeacher_modal(false);
+    setTeacherModal(false);
   };
 
   const handleCancel = () => {
-    setTeacher_modal(false);
+    setTeacherModal(false);
   };
 
   const handleSubmit = () => {
@@ -28,10 +77,9 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* Set title of the browser tab */}
       <Head>
         <title>Meep Dashboard</title>
-        <link style={{radius:'100%'}} rel="icon" href="/MeeP.png" />
+        <link style={{ radius: '100%' }} rel="icon" href="/MeeP.png" />
       </Head>
 
       <HeaderSection
@@ -39,37 +87,45 @@ export default function Dashboard() {
         subHeading={"Welcome to MeeP dashboard"}
         rightItem={() => (
           <ActionButton
-            onClick={() => setTeacher_modal(true)}
+            onClick={() => setTeacherModal(true)}
             Icon={AiOutlinePlusCircle}
             label="Add New Teacher/Tutor"
           />
         )}
       />
 
-      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100;", marginLeft: "20px", marginRight: "20px" }}>
+      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <h3 style={{ fontSize: "1.25rem", color: "#010100", fontWeight: "bold" }}>Appointments</h3>
-          <Link href="/appointments"> {/* Use Link component for navigation */}
-            <span style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}>View All</span>
-          </Link>
+          <span style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}>View All</span>
         </div>
         <p style={{ color: "#4A5568" }}>You have 3 new appointments</p>
       </div>
 
-      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100;", marginLeft: "20px", marginRight: "20px" }}>
+      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <h3 style={{ fontSize: "1.25rem", color: "#010100", fontWeight: "bold" }}>Subjects</h3>
-          <Link href="/subjects"> {/* Use Link component for navigation */}
-            <span style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}>View Details</span>
-          </Link>
+          <span
+            style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}
+            onClick={() => setIsSubjectsVisible(!isSubjectsVisible)}
+          >
+            {isSubjectsVisible ? "View Less" : "View Details"}
+          </span>
         </div>
-        <p style={{ color: "#4A5568" }}>You teach 3 subjects</p>
+        <p style={{ color: "#4A5568" }}>You teach {courses.length} subjects</p>
+        {isSubjectsVisible && (
+          <ul>
+            {courses.map(course => (
+              <li key={course.id} style={{ color: "#4A5568" }}>{course.name}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100;", marginLeft: "20px", marginRight: "20px" }}>
+      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <h3 style={{ fontSize: "1.25rem", color: "#010100", fontWeight: "bold" }}>Statistics</h3>
-          <Link href="/quizzes"> {/* Use Link component for navigation */}
+          <Link href="/quizzes">
             <span style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}>View Details</span>
           </Link>
         </div>
@@ -77,47 +133,18 @@ export default function Dashboard() {
       </div>
 
       <Section>
-        <Link href="/teachers"> {/* Use Link component for navigation */}
-          <DataCard
-            label={"Teachers"}
-            value={"7"}
-            inverse={true}
-          />
-        </Link>
-        <Link href="/tutors"> {/* Use Link component for navigation */}
-          <DataCard
-            label={"Tutors"}
-            value={"4321 +"}
-            inverse={true}
-          />
-        </Link>
-        <Link href="/students"> {/* Use Link component for navigation */}
-          <DataCard
-            label={"Students"}
-            value={"32+"}
-            inverse={true}
-          />
-        </Link>
-        <Link href="/videos"> {/* Use Link component for navigation */}
-          <DataCard
-            label={"Videos"}
-            value={"70"}
-            inverse={true}
-          />
-        </Link>
-        <Link href="/quizzes"> {/* Use Link component for navigation */}
-          <DataCard
-            label={"Documents"}
-            value={"4321 +"}
-            inverse={true}
-          />
-        </Link>
+        <DataCard label={"Teachers"} value={"7"} inverse={true} />
+        <DataCard label={"Tutors"} value={"4321 +"} inverse={true} />
+        <DataCard label={"Students"} value={studentCount} inverse={true} />
+        <DataCard label={"Videos"} value={videoCount} inverse={true} />
+        <DataCard label={"Documents"} value={documentCount} inverse={true} /> {/* Display document count */}
+        <DataCard label={"Subjects"} value={courses.length} inverse={true} />
       </Section>
 
       <QuizzesAndResults />
 
       <Teacher_Modal
-        isOpen={teacher_modal}
+        isOpen={teacherModal}
         onClose={handleClose}
         heading={"MeeP Dashboard"}
         positiveText={"Save"}
@@ -126,7 +153,10 @@ export default function Dashboard() {
         onSubmit={handleSubmit}
       >
         <p>Welcome to MeeP admin dashboard</p>
-      </Teacher_Modal>
+        </Teacher_Modal>
     </>
   );
-}
+};
+
+export default Dashboard;
+

@@ -1,8 +1,8 @@
-import Layout from '@meep/components/layout';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import TopicCard from 'src/Pages/manage/TopicCard';
+import Layout from '@/ui-components/layout';
+import TopicCard from '@/Pages/manage/TopicCard';
 
 const subjectTopicsStyle = {
   display: 'flex',
