@@ -1,6 +1,7 @@
-import { IoGridOutline, IoHomeOutline } from "react-icons/io5";
+import { IoGridOutline, IoHomeOutline, IoCallOutline } from "react-icons/io5"; // Import IoCallOutline
 import { BsSpeedometer2 } from "react-icons/bs";
 import { BiUserCircle } from "react-icons/bi";
+import { RiMessage2Line, RiFileListLine } from "react-icons/ri";
 
 export default [
     {
@@ -11,7 +12,7 @@ export default [
     {
         to: '/content',
         name: 'Create Content',
-        Icon: BsSpeedometer2
+        Icon: BsSpeedometer2 // Assuming this icon is appropriate for Create Content
     },
     {
         to: '/manage',
@@ -21,7 +22,7 @@ export default [
     {
         to: '/messaging',
         name: 'Messaging',
-        Icon: IoGridOutline
+        Icon: RiMessage2Line // Better suited icon for Messaging
     },
     {
         to: '/profile',
@@ -31,11 +32,11 @@ export default [
     {
         to: '/quizzes',
         name: 'Quizzes',
-        Icon: IoGridOutline
+        Icon: RiFileListLine // Assuming this icon better matches Quizzes
     },
     {
         to: '/ussd-quiz',
         name: 'Ussd Quiz',
-        Icon: IoGridOutline
+        Icon: IoCallOutline // Using a phone icon for USSD Quiz
     }
 ];

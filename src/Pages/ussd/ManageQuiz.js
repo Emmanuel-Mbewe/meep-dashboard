@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import UssdNavbar from 'src/Pages/ussd/UssdNavBar';
 import { FaEdit, FaArchive, FaTrash, FaEye } from 'react-icons/fa';
 import Modal from 'react-modal';
+import UssdNavbar from './UssdNavBar';
 
 Modal.setAppElement('#__next'); // Ensure this matches the root element of your Next.js app
 
@@ -140,7 +140,7 @@ const ManageQuiz = () => {
             <ul>
               {selectedQuestion.answers.map((answer, index) => (
                 <li key={answer.id}>
-                  {String.fromCharCode(65 + index)}: {answer.text} {answer.isCorrect && <strong>(Correct)</strong>}
+                  {String} {answer.text} {answer.isCorrect && <strong>(Correct)</strong>}
                 </li>
               ))}
             </ul>

@@ -1,10 +1,10 @@
-import UssdQuiz from "@/Pages/ussd/Questions";
+import ManageQuiz from "@/Pages/ussd/ManageQuiz";
 import Layout from "../src/ui-components/layout";
 
 const Ussd = () => {
     return (
         <Layout>
-            <UssdQuiz />
+            <ManageQuiz />
         </Layout>
     );
 }
