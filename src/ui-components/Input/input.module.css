@@ -1,0 +1,9 @@
+.input-style{
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-bottom: 1px solid #010100;
+    outline: none;
+    background: #eee;
+    display: inline-block;
+}
