@@ -1,4 +1,5 @@
-import { useState } from "react";
+import React, { useState } from 'react';
+import Head from 'next/head'; // Correctly import Head from next/head
 import DataCard from "@/ui-components/DataCard";
 import ActionButton from "@/ui-components/ActionButton";
 import { AiOutlinePlusCircle } from "react-icons/ai";
@@ -27,6 +28,12 @@ export default function Dashboard() {
 
   return (
     <>
+      {/* Set title of the browser tab */}
+      <Head>
+        <title>Meep Dashboard</title>
+        <link style={{radius:'100%'}} rel="icon" href="/MeeP.png" />
+      </Head>
+
       <HeaderSection
         heading={"Dashboard"}
         subHeading={"Welcome to MeeP dashboard"}
@@ -38,6 +45,7 @@ export default function Dashboard() {
           />
         )}
       />
+
       <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100;", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <h3 style={{ fontSize: "1.25rem", color: "#010100", fontWeight: "bold" }}>Appointments</h3>
@@ -104,7 +112,6 @@ export default function Dashboard() {
             inverse={true}
           />
         </Link>
-        
       </Section>
 
       <QuizzesAndResults />
