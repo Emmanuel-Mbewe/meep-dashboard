@@ -61,39 +61,6 @@ const Header = ({ toggleSidebarMenu }) => {
       </div>
       <div className={styles["right-items"]}>
         <ul className={styles["header-navigations"]}>
-
-          <li>
-            <DropdownMenu 
-              CustomMenu={NotificationsIcon} 
-              // count={3}
-              screenCenter={false}
-              >
-              <div className={styles["notification-container"]}>
-    
-                <div className={`flex justify-sb ${styles["notification-header"]}`}>
-                  <h3>Notifications</h3>
-                  <p style={{ color: "#4285F4", fontWeight: "bold" }}>
-                    Mark all as Read
-                  </p>
-                </div>
-                <div className={styles["notification-body"]}>
-                  <ul className={styles["notification-tab"]}>
-                    {[].map((notification, i) => (
-                      <NotificationList 
-                        key={i}
-                        img={`/Bertha.jpg`}
-                        desc={'Bertha Imbwah Liked your video'}
-                        datetime={'1:12pm'}
-                      />
-                    ))}
-                  
-                </ul>
-                </div>
-                
-              </div>
-            </DropdownMenu>
-          </li>
-
           <li>
             {/* User Dropdown Menu */}
             <DropdownMenu

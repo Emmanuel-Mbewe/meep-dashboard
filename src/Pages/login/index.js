@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
-import styles from "./login.module.css";
 import Logo from "@/ui-components/Logo";
 import Input from "@/ui-components/Input";
 import FullButton from "@/ui-components/FullButton";
@@ -31,51 +29,39 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <section className={styles["login-container"]}>
-        <div className={styles["brand-container"]}>
-          <Logo />
-          <div className={styles["logo-explain"]}>MeeP Dashboard</div>
-        </div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: "0 20px" }}>
+      <div style={{ textAlign: "center", marginBottom: "30px" }}>
+        <Logo width="150px" height="150px" />
+        <div style={{ marginTop: "15px", fontSize: "32px", fontWeight: "bold" }}>MeeP Dashboard</div>
+      </div>
 
-        <div className={styles["form-container"]}>
-          <div className="t-center" style={{ margin: "15px 0" }}>
-            <div className={styles["sm-brand-container"]}>
-              <Logo />
-            </div>
-            <h1>Login</h1>
-            <p>Please enter email and password to login</p>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <Input
-              inputContainerStyle={{ padding: "15px 30px" }}
-              type="text"
-              placeholder="Email"
-              onChange={handleChange}
-              value={formData.email}
-              name="email"
-              label={"Email"}
-            />
-            <Input
-              inputContainerStyle={{ padding: "15px 30px" }}
-              type="password"
-              placeholder="Password"
-              onChange={handleChange}
-              value={formData.password}
-              name="password"
-              label={"Password"}
-            />
-            <FullButton label={"Login"} />
-          </form>
-
-          <p className="tc-grey t-center">
-            Don't have an account?{" "}
-            <Link className="link" href={`/signup`}>
-              Signup for free
-            </Link>
-          </p>
+      <div style={{ backgroundColor: "#f9f9f9", borderRadius: "20px", padding: "30px", boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.1)", width: "100%", maxWidth: "400px" }}>
+        <div style={{ textAlign: "center", marginBottom: "30px" }}>
+          <h1 style={{ marginBottom: "20px", fontSize: "36px" }}>Login</h1>
+          <p style={{ margin: "0", fontSize: "18px", color: "#666" }}>Please enter email and password to login</p>
         </div>
-      </section>
+        <form onSubmit={handleSubmit}>
+          <Input
+            inputContainerStyle={{ padding: "20px 40px", fontSize: "18px" }}
+            type="text"
+            placeholder="Email"
+            onChange={handleChange}
+            value={formData.email}
+            name="email"
+            label={"Email"}
+          />
+          <Input
+            inputContainerStyle={{ padding: "20px 40px", fontSize: "18px" }}
+            type="password"
+            placeholder="Password"
+            onChange={handleChange}
+            value={formData.password}
+            name="password"
+            label={"Password"}
+          />
+          <FullButton label={"Login"} style={{ fontSize: "18px", padding: "15px 0" }} />
+        </form>
+      </div>
     </div>
   );
 };

@@ -19,11 +19,6 @@ export const headerLoginMenuList = [
       text: 'Login',
       Icon: AiOutlineLogin,
       href:'/login'
-    },
-    {
-      text: 'Signup',
-      Icon: AiOutlineLogout,
-      href: '/signup'
     }
   ]
 
