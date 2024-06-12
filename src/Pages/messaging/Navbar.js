@@ -22,9 +22,6 @@ const Navbar = () => {
     <nav className="navbar">
       <ul>
         <li onClick={openModal}>Write a Message</li>
-        <li>Drafts</li>
-        <li>Sent</li>
-        <li>Bin</li>
       </ul>
       <WriteMessageModal isOpen={isModalOpen} onClose={closeModal} to={to} subject={subject} message={message} />
       <style jsx>{`

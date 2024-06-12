@@ -40,8 +40,8 @@ const UssdNavbar = () => {
                 </li>
             
                 <li>
-                    <Link href="/archived-quiz" passHref>
-                        <p style={linkStyle}>Archived quiz</p>
+                    <Link href="/quizzes" passHref>
+                        <p style={linkStyle}>Quiz PDFs</p>
                     </Link>
                 </li>
             </ul>

@@ -7,11 +7,12 @@ const Messages = () => {
   const [messages, setMessages] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false); // Add loading state
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/send-message');
+        const response = await axios.get('http://localhost:8080/api/message'); // Corrected endpoint
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -21,14 +22,26 @@ const Messages = () => {
     fetchMessages();
   }, []);
 
-  const deleteMessage = async () => {
+  const fetchMessages = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/send-message/${selectedMessageId}`);
+      const response = await axios.get('http://localhost:8080/api/message');
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+
+  const deleteMessage = async () => {
+    setIsDeleting(true); // Set loading state to true
+    try {
+      await axios.delete(`http://localhost:8080/api/message/${selectedMessageId}`); // Corrected endpoint
       // After deletion, fetch updated messages
       fetchMessages();
-      setShowModal(false);
     } catch (error) {
       console.error('Error deleting message:', error);
+    } finally {
+      setIsDeleting(false); // Set loading state to false
+      setShowModal(false);  // Dismiss the modal
     }
   };
 
@@ -48,11 +61,11 @@ const Messages = () => {
         {messages.map(message => (
           <div key={message.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #ccc', borderRadius: '5px', margin: '10px 0', padding: '10px' }}>
             <div>
-              <p style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{message.title}</p>
-              <p style={{ fontSize: '1rem', marginBottom: '5px' }}>{message.body}</p>
-              <p style={{ fontSize: '0.9rem', color: '#616', marginTop: '20px' }}>Recipient: {message.recipient}</p>
+              <p style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{message.text}</p>
+              <p style={{ fontSize: '1rem', marginBottom: '5px' }}>{message.numbers}</p>
+              <p style={{ fontSize: '0.9rem', color: '#616', marginTop: '20px' }}>From: {message.from}</p>
             </div>
-            <button onClick={() => handleDeleteClick(message.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'red', fontSize: '1.2rem' }}>
+            <button onClick={() => handleDeleteClick(message._id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'red', fontSize: '1.2rem' }}>
               <AiOutlineDelete />
             </button>
           </div>
@@ -63,8 +76,12 @@ const Messages = () => {
           <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '5px' }}>
             <p>Are you sure you want to delete this message?</p>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-              <button onClick={deleteMessage} style={{ padding: '10px 20px', background: 'red', color: '#fff', borderRadius: '5px', cursor: 'pointer' }}>Yes</button>
-              <button onClick={handleCloseModal} style={{ padding: '10px 20px', background: '#ccc', color: '#000', borderRadius: '5px', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={deleteMessage} style={{ padding: '10px 20px', background: 'red', color: '#fff', borderRadius: '5px', cursor: 'pointer' }} disabled={isDeleting}>
+                {isDeleting ? 'Deleting...' : 'Yes'}
+              </button>
+              <button onClick={handleCloseModal} style={{ padding: '10px 20px', background: '#ccc', color: '#000', borderRadius: '5px', cursor: 'pointer' }} disabled={isDeleting}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>

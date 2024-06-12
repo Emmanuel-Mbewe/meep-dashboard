@@ -3,6 +3,7 @@ import { Editor, EditorState, RichUtils } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 import axios from 'axios';
 import { FaBold, FaItalic, FaUnderline } from 'react-icons/fa';
+import Head from 'next/head';
 
 const topics = {
   Mathematics: ['Algebra', 'Geometry', 'Calculus'],
@@ -100,7 +101,13 @@ const Content = () => {
   };
 
   return (
-    <div className="container">
+    <>
+      <Head>
+        <title>Meep Dashboard</title>
+        <link style={{ radius: '100%' }} rel="icon" href="/MeeP.png" />
+      </Head>
+      
+      <div className="container">
       <div className="content-box">
         <h1>Create Content</h1>
         {feedbackMessage && <div className="feedback">{feedbackMessage}</div>}
@@ -269,6 +276,7 @@ const Content = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

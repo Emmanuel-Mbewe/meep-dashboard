@@ -2,6 +2,7 @@
 import React from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import SubjectList from './SubjectList';
+import Head from 'next/head';
 
 const navigationContainerStyle = {
   display: 'flex',
@@ -28,7 +29,14 @@ const ManageContent = () => {
   };
 
   return (
-    <div>
+    <>
+
+      <Head>
+        <title>Meep Dashboard</title>
+        <link style={{ radius: '100%' }} rel="icon" href="/MeeP.png" />
+      </Head>
+
+      <div>
       <h1 style={{ marginLeft: '30px' }}>Subjects</h1>
       <SubjectList />
       <div style={navigationContainerStyle}>
@@ -36,6 +44,7 @@ const ManageContent = () => {
         <FaArrowRight style={arrowStyle} onClick={handleForward} />
       </div>
     </div>
+    </>
   );
 };
 

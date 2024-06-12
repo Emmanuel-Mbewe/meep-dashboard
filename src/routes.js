@@ -35,7 +35,7 @@ export default [
         Icon: RiFileListLine // Assuming this icon better matches Quizzes
     },
     {
-        to: '/ussd-quiz',
+        to: '/create-subjects',
         name: 'Ussd Quiz',
         Icon: IoCallOutline // Using a phone icon for USSD Quiz
     }

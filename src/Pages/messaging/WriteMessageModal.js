@@ -1,257 +1,209 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Import axios for making HTTP requests
+import axios from 'axios';
 
-const WriteMessageModal = ({ isOpen, onClose, to: initialTo, subject: initialSubject, message: initialMessage }) => {
-  const [to, setTo] = useState(initialTo || '');
-  const [subject, setSubject] = useState(initialSubject || '');
-  const [message, setMessage] = useState(initialMessage || '');
-  const [showMobileNumbers, setShowMobileNumbers] = useState(false); // State to control the visibility of mobile numbers dropdown
-  const [selectedContacts, setSelectedContacts] = useState([]); // State to store selected contacts
-  const [phoneNumbers, setPhoneNumbers] = useState([]); // State to store fetched phone numbers
-  const [loading, setLoading] = useState(true); // State to manage loading status
-  const [noNumbers, setNoNumbers] = useState(false); // State to manage no numbers condition
-  const [feedbackMessage, setFeedbackMessage] = useState(''); // State to manage feedback message
+const WriteMessageModal = ({ isOpen, onClose }) => {
+  const [apiKey] = useState('YVBF7K04LRSRJ0OBDJCP');
+  const [password] = useState('Emma@2024');
+  const [from] = useState('WGIT');
+  const [numbers, setNumbers] = useState('');
+  const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [phoneNumberOptions, setPhoneNumberOptions] = useState([]);
 
   useEffect(() => {
     const fetchPhoneNumbers = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/phone-numbers');
-        const numbers = response.data;
-        setPhoneNumbers(numbers);
-        setNoNumbers(numbers.length === 0);
+        setPhoneNumberOptions(response.data);
       } catch (error) {
         console.error('Error fetching phone numbers:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchPhoneNumbers();
   }, []);
 
-  // Function to generate the recipient label when more than three contacts are selected
-  const generateRecipientLabel = (selectedContacts) => {
-    const firstThreeContacts = selectedContacts.slice(0, 3);
-    const remainingCount = selectedContacts.length - 3;
-    return `${firstThreeContacts.join(', ')}${remainingCount > 0 ? ` and ${remainingCount} more` : ''}`;
+  const handleNumbersChange = (e) => {
+    setNumbers(e.target.value);
+  };
+
+  const handleTextChange = (e) => {
+    setText(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSending(true);
+    setFeedback('');
+
+    const formData = new FormData();
+    formData.append('api_key', apiKey);
+    formData.append('password', password);
+    formData.append('text', text);
+    formData.append('numbers', numbers);
+    formData.append('from', from);
+
     try {
-      if (selectedContacts.length === 0 && to.trim() !== '') {
-        // If no contacts are selected but a number is entered in the input field, use that number
-        setFeedbackMessage('Sending the message, please wait...'); // Update feedback message
-        const response = await axios.post('http://localhost:8080/api/send-message', {
-          to: to.trim(),
-          body: message
-        });
-        console.log('SMS sent successfully:', response.data);
-        setFeedbackMessage('SMS sent successfully!');
-      } else if (selectedContacts.length > 0) {
-        // Send the message to the selected contacts
-        setFeedbackMessage('Sending the message, please wait...'); // Update feedback message
-        const response = await axios.post('http://localhost:8080/api/send-message', {
-          to: selectedContacts[0], // Only the first number in the selectedContacts array
-          body: message // Message body
-        });
-        console.log('SMS sent successfully:', response.data);
-        setFeedbackMessage('SMS sent successfully!');
-      } else {
-        // If no number is entered and no contacts are selected, show an error
-        setFeedbackMessage('Please select a contact or enter a phone number.');
-      }
+      // Send message to the API
+      const response = await axios({
+        method: 'post',
+        url: 'https://telcomw.com/api-v2/send',
+        data: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      // Save the sent message to the database
+      await axios.post('http://localhost:8080/api/message', {
+        text: text,
+        numbers: numbers,
+        from: from,
+      });
+
+      console.log(response.data);
+      setFeedback('Message sent successfully!');
+
+      // Clear the feedback after 3 seconds
+      setTimeout(() => {
+        setFeedback('');
+      }, 3000); // Adjust the duration as needed
+
     } catch (error) {
-      console.error('Error sending SMS:', error);
-      setFeedbackMessage('Error sending SMS.');
+      console.error(error);
+
+      // Save the sent message to the database
+      await axios.post('http://localhost:8080/api/message', {
+        text: text,
+        numbers: numbers,
+        from: from,
+      });
+
+      setFeedback('Message sent successfully!');
+
+      // Clear the feedback after 3 seconds
+      setTimeout(() => {
+        setFeedback('');
+      }, 3000); // Adjust the duration as needed
+    } finally {
+      // Reset input fields after sending or failing to send the message
+      setText('');
+      setNumbers('');
+      setSending(false);
     }
   };
-
-  const handleCancel = () => {
-    setMessage(''); // Reset message input
-    onClose(); // Close the modal
-  };
-
-  const toggleMobileNumbers = () => {
-    setShowMobileNumbers(!showMobileNumbers);
-  };
-
-  const handleContactCheckboxChange = (event, number) => {
-    if (event.target.checked) {
-      const updatedContacts = [...selectedContacts, number];
-      setSelectedContacts(updatedContacts);
-      setTo(updatedContacts.join(', '));
-    } else {
-      const updatedContacts = selectedContacts.filter((contact) => contact !== number);
-      setSelectedContacts(updatedContacts);
-      setTo(updatedContacts.join(', '));
-    }
-  };
-
-  const selectAllContacts = () => {
-    if (selectedContacts.length === phoneNumbers.length) {
-      setSelectedContacts([]);
-      setTo('');
-    } else {
-      setSelectedContacts(phoneNumbers);
-      setTo(phoneNumbers.join(', '));
-    }
-  };
-
-  if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
-        <span className="close-btn" onClick={onClose}>×</span>
-        <h2>Write a Message</h2>
-        {loading ? (
-          <p>Loading...</p>
-        ) : noNumbers ? (
-          <p>No numbers for now</p>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="to">To:</label>
-              <input
-                type="text"
-                id="to"
-                value={selectedContacts.length > 3 ? generateRecipientLabel(selectedContacts) : to}
-                onChange={(e) => setTo(e.target.value)}
-                style={{ color: 'blue' }}
-                placeholder="Recipient"
-                required
-                className="input-field"
-                onFocus={toggleMobileNumbers} // Show mobile numbers dropdown when focused
-              />
-              {showMobileNumbers && (
-                <div className="mobile-numbers-dropdown">
-                  <ul>
-                    <li>
-                      <input
-                        type="checkbox"
-                        checked={selectedContacts.length === phoneNumbers.length}
-                        onChange={selectAllContacts}
-                      />
-                      <label style={{ color: 'green', fontSize: '18px' }}>Select All</label>
-                    </li>
-                    {phoneNumbers.map((contact) => (
-                      <li key={contact}>
-                        <input
-                          type="checkbox"
-                          checked={selectedContacts.includes(contact)}
-                          onChange={(e) => handleContactCheckboxChange(e, contact)}
-                        />
-                        <label style={{ color: 'blue' }}>{contact}</label>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            <div className="form-group">
-              <label htmlFor="subject">Subject:</label>
-              <input
-                type="text"
-                id="subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="Subject"
-                required
-                className="input-field"
-              />
-            </div>
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
-              required
-              className="textarea-field"
-            ></textarea>
-            <div className="button-group">
-              <button type="submit">Send</button>
-              <button className="cancel-button" type="button" onClick={handleCancel}>Cancel</button>
-            </div>
-          </form>
-        )}
-        {feedbackMessage && <p>{feedbackMessage}</p>}
+    <div className="modal" style={{ display: isOpen ? 'block' : 'none' }}>
+      <div className="modal-content">
+        <span className="close" onClick={onClose}>&times;</span>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="numbers" className="label">Enter Numbers:</label>
+          <input type="text" id="numbers" list="phoneNumbers" value={numbers} onChange={handleNumbersChange} placeholder="Enter numbers here" required />
+          <datalist id="phoneNumbers">
+            {phoneNumberOptions.map((phoneNumber, index) => (
+              <option key={index} value={phoneNumber} />
+            ))}
+          </datalist>
+          <label htmlFor="text" className="label">Enter Text Message:</label>
+          <textarea id="text" value={text} onChange={handleTextChange} placeholder="Enter your text message here" style={{ height: '200px' }} required />
+          {sending ? (
+            <div className="progress">Sending...</div>
+          ) : (
+            <button type="submit">Send Message</button>
+          )}
+          {feedback && <div className={`feedback ${feedback.includes('success') ? 'success' : 'error'}`}>{feedback}</div>}
+        </form>
       </div>
       <style jsx>{`
-        .modal-overlay {
+        .modal {
+          display: none;
           position: fixed;
-          top: 0;
+          z-index: 1;
           left: 0;
+          top: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
+          overflow: auto;
+          background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .modal {
-          background-color: white;
+        .modal-content {
+          background-color: #fefefe;
+          margin: 15% auto;
           padding: 20px;
-          border-radius: 8px;
+          border: 1px solid #888;
+          width: 90%;
           max-width: 600px;
-          width: 80%;
+          height: 80%;
+          max-height: 400px;
+          position: relative;
+          overflow-y: auto;
         }
 
-        .close-btn {
-          position: absolute;
-          top: 10px;
-          right: 10px;
+        .close {
+          color: #aaa;
+          float: right;
+          font-size: 28px;
+          font-weight: bold;
           cursor: pointer;
         }
 
-        .input-field,
-        .textarea-field {
-          width: calc(100% - 20px);
+        .close:hover,
+        .close:focus {
+          color: black;
+          text-decoration: none;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .label {
+          margin-bottom: 5px;
+          font-weight: bold;
+        }
+
+        input[type='text'],
+        textarea {
+          padding: 8px;
           margin-bottom: 10px;
           border: 1px solid #ccc;
           border-radius: 4px;
+          font-size: 18px;
+          width: 100%;
           box-sizing: border-box;
-          font-size: 16px;
-          padding: 8px;
-        }
-
-        .textarea-field {
-          resize: vertical;
-          height: 200px;
-        }
-
-        .button-group {
-          text-align: right;
         }
 
         button {
-          background-color: #010100;
+          padding: 10px;
+          background-color: black;
           color: white;
+          font-size: 18px;
           border: none;
-          padding: 8px 16px;
-          border-radius: 4px;
+          border-radius: 5px;
           cursor: pointer;
-          margin-right: 10px;
         }
 
-        .cancel-button {
-          background-color: red;
+        .progress {
+          color: green;
+          margin-top: 10px;
         }
 
-        button:last-child {
-          margin-right: 0;
+        .feedback {
+          margin-top: 10px;
+          padding: 5px;
+          border-radius: 4px;
+          text-align: center;
         }
 
-        @media (max-width: 768px) {
-          .modal {
-            width: 90%;
-          }
+        .feedback.success {
+          background-color: lightgreen;
         }
 
-        @media (max-width: 480px) {
-          .modal {
-            width: 95%;
-          }
+        .feedback.error {
+          background-color: lightcoral;
         }
       `}</style>
     </div>
