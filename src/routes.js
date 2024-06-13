@@ -5,7 +5,7 @@ import { RiMessage2Line, RiFileListLine } from "react-icons/ri";
 
 export default [
     {
-        to: '/',
+        to: '/dashboard',
         name: 'Home',
         Icon: IoHomeOutline
     },
@@ -24,11 +24,11 @@ export default [
         name: 'Messaging',
         Icon: RiMessage2Line // Better suited icon for Messaging
     },
-    {
-        to: '/profile',
-        name: 'Profile',
-        Icon: BiUserCircle
-    },
+    // {
+    //     to: '/profile',
+    //     name: 'Profile',
+    //     Icon: BiUserCircle
+    // },
     {
         to: '/quizzes',
         name: 'Quizzes',

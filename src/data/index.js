@@ -1,12 +1,12 @@
-import { FiUser, FiLogOut} from "react-icons/fi";
-import { AiOutlineLogin, AiOutlineLogout } from "react-icons/ai";
+import { FiLogOut} from "react-icons/fi";
+import { AiOutlineLogin,} from "react-icons/ai";
 
 export const menuList = [
-  {
-    text: "Profile",
-    Icon: FiUser,
-    href: "/profile",
-  },
+  // {
+  //   text: "Profile",
+  //   Icon: FiUser,
+  //   href: "/profile",
+  // },
   {
     text: "Logout",
     Icon: FiLogOut,

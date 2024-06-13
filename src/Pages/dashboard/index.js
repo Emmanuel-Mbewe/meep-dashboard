@@ -143,7 +143,7 @@ const Dashboard = () => {
 
       <QuizzesAndResults />
 
-      <Teacher_Modal
+      {/* <Teacher_Modal
         isOpen={teacherModal}
         onClose={handleClose}
         heading={"MeeP Dashboard"}
@@ -153,7 +153,7 @@ const Dashboard = () => {
         onSubmit={handleSubmit}
       >
         <p>Welcome to MeeP admin dashboard</p>
-        </Teacher_Modal>
+        </Teacher_Modal> */}
     </>
   );
 };
