@@ -34,8 +34,8 @@ const UssdNavbar = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link href="/create-subjects" passHref>
-                        <p style={linkStyle}>Create subjects and classes</p>
+                    <Link href="/qustions" passHref>
+                        <p style={linkStyle}>Questions</p>
                     </Link>
                 </li>
             

@@ -3,7 +3,6 @@ import axios from 'axios';
 import UssdNavbar from './UssdNavBar';
 import Modal from '@/components/Modal';
 
-
 const UssdQuiz = () => {
   const [questionText, setQuestionText] = useState('');
   const [answers, setAnswers] = useState([
@@ -23,7 +22,7 @@ const UssdQuiz = () => {
     // Fetch forms from the backend
     const fetchForms = async () => {
       try {
-        const formsResponse = await axios.get('http://localhost:8080/api/forms');
+        const formsResponse = await axios.get('http://localhost:8000/api/v1/class');
         setForms(formsResponse.data);
       } catch (error) {
         console.error('Error fetching forms:', error);
@@ -33,7 +32,7 @@ const UssdQuiz = () => {
     // Fetch subjects from the backend
     const fetchSubjects = async () => {
       try {
-        const subjectsResponse = await axios.get('http://localhost:8080/api/courses');
+        const subjectsResponse = await axios.get('http://localhost:8000/api/v1/subject');
         setSubjects(subjectsResponse.data);
       } catch (error) {
         console.error('Error fetching subjects:', error);
@@ -48,7 +47,7 @@ const UssdQuiz = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/api/quiz', {
+      const response = await axios.post('http://localhost:8000/api/quiz', {
         text: questionText,
         answers,
         formId: selectedForm,
@@ -105,7 +104,7 @@ const UssdQuiz = () => {
             >
               <option value="" disabled>Select Form</option>
               {forms.map(form => (
-                <option key={form.id} value={form.id}>{form.name}</option>
+                <option key={form._id} value={form._id}>{form.name}</option>
               ))}
             </select>
           </div>
@@ -119,7 +118,7 @@ const UssdQuiz = () => {
             >
               <option value="" disabled>Select Subject</option>
               {subjects.map(course => (
-                <option key={course.id} value={course.id}>{course.name}</option>
+                <option key={course._id} value={course._id}>{course.name}</option>
               ))}
             </select>
           </div>
@@ -218,13 +217,12 @@ const styles = {
   message: {
     fontSize: '18px',
   },
- 
-link: {
-  color: 'blue',
-  textDecoration: 'underline',
-  cursor: 'pointer',
-  marginLeft: '5px',
+  link: {
+    color: 'blue',
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    marginLeft: '5px',
   },
-  };
-  
-  export default UssdQuiz;
+};
+
+export default UssdQuiz;

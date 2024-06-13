@@ -14,7 +14,7 @@ const WriteMessageModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchPhoneNumbers = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/phone-numbers');
+        const response = await axios.get('http://localhost:8000/api/phone-numbers');
         setPhoneNumberOptions(response.data);
       } catch (error) {
         console.error('Error fetching phone numbers:', error);
@@ -54,7 +54,7 @@ const WriteMessageModal = ({ isOpen, onClose }) => {
       });
 
       // Save the sent message to the database
-      await axios.post('http://localhost:8080/api/message', {
+      await axios.post('http://localhost:8000/api/message', {
         text: text,
         numbers: numbers,
         from: from,
@@ -72,7 +72,7 @@ const WriteMessageModal = ({ isOpen, onClose }) => {
       console.error(error);
 
       // Save the sent message to the database
-      await axios.post('http://localhost:8080/api/message', {
+      await axios.post('http://localhost:8000/api/message', {
         text: text,
         numbers: numbers,
         from: from,

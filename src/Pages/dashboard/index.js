@@ -22,7 +22,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/courses');
+        const response = await axios.get('http://localhost:8000/api/v1/subject');
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -31,7 +31,7 @@ const Dashboard = () => {
 
     const fetchVideoCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/content/videos/count');
+        const response = await axios.get('http://localhost:8000/api/content/videos/count');
         setVideoCount(response.data.count);
       } catch (error) {
         console.error('Error fetching video count:', error);
@@ -40,7 +40,7 @@ const Dashboard = () => {
 
     const fetchStudentCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/students/count');
+        const response = await axios.get('http://localhost:8000/api/students/count');
         setStudentCount(response.data.count);
       } catch (error) {
         console.error('Error fetching student count:', error);
@@ -49,7 +49,7 @@ const Dashboard = () => {
 
     const fetchDocumentCount = async () => { // Fetch document count
       try {
-        const response = await axios.get('http://localhost:8080/api/documents/count');
+        const response = await axios.get('http://localhost:8000/api/documents/count');
         setDocumentCount(response.data.count);
       } catch (error) {
         console.error('Error fetching document count:', error);
@@ -94,13 +94,13 @@ const Dashboard = () => {
         )}
       />
 
-      <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
+      {/* <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
           <h3 style={{ fontSize: "1.25rem", color: "#010100", fontWeight: "bold" }}>Appointments</h3>
           <span style={{ color: "#4299E1", textDecoration: "underline", cursor: "pointer" }}>View All</span>
         </div>
         <p style={{ color: "#4A5568" }}>You have 3 new appointments</p>
-      </div>
+      </div> */}
 
       <div style={{ backgroundColor: "#F3F4F6", borderRadius: "8px", padding: "20px", marginBottom: "20px", borderLeft: "4px solid #010100", marginLeft: "20px", marginRight: "20px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
@@ -133,8 +133,8 @@ const Dashboard = () => {
       </div>
 
       <Section>
-        <DataCard label={"Teachers"} value={"7"} inverse={true} />
-        <DataCard label={"Tutors"} value={"4321 +"} inverse={true} />
+        <DataCard label={"Teachers"} value={"4"} inverse={true} />
+        <DataCard label={"Tutors"} value={"4"} inverse={true} />
         <DataCard label={"Students"} value={studentCount} inverse={true} />
         <DataCard label={"Videos"} value={videoCount} inverse={true} />
         <DataCard label={"Documents"} value={documentCount} inverse={true} /> {/* Display document count */}

@@ -3,26 +3,25 @@ import axios from 'axios';
 import { FaEye, FaFilePdf, FaTrash } from 'react-icons/fa';
 import Modal from 'react-modal';
 import UssdNavbar from './UssdNavBar';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 Modal.setAppElement('#__next'); // Ensure this matches the root element of your Next.js app
 
 const ManageQuiz = () => {
-  const [questions, setQuestions] = useState([]); // Ensure questions state is initialized as an array
+  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null); // State to hold the selected PDF file
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/quiz');
+        const res = await axios.get('http://localhost:8000/api/quiz');
         setQuestions(res.data);
         setLoading(false);
       } catch (err) {
@@ -52,7 +51,7 @@ const ManageQuiz = () => {
 
   const confirmDeleteQuestion = async () => {
     try {
-      await axios.delete(`http://localhost:8080/api/quiz/${questionToDelete}`);
+      await axios.delete(`http://localhost:8000/api/quiz/${questionToDelete}`);
       setQuestions(questions.filter(q => q.id !== questionToDelete));
       setIsDeleteModalOpen(false);
       setQuestionToDelete(null);
@@ -70,10 +69,6 @@ const ManageQuiz = () => {
     setQuestionToDelete(null);
   };
 
-  const handleFileChange = (event) => {
-    setPdfFile(event.target.files[0]);
-  };
-
   const generatePDF = async () => {
     try {
       const currentDate = new Date().toISOString().split('T')[0]; 
@@ -81,35 +76,62 @@ const ManageQuiz = () => {
 
       // Create a new PDF document
       const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage();
-
-      // Add text to the PDF
+      var page = pdfDoc.addPage();
       const { width, height } = page.getSize();
-      const fontSize = 20;
-      const text = "Questions and Answers:\n\n";
-      const font = await pdfDoc.embedFont('Helvetica');
-      const textWidth = font.widthOfTextAtSize(text.replace(/\n/g, ' '), fontSize); 
-      page.drawText(text, {
-        x: (width - textWidth) / 2,
-        y: height - 4 * fontSize,
-        size: fontSize,
+      const fontSize = 12;
+      const margin = 50;
+      let yPosition = height - margin;
+
+      // Load a standard font
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+      // Add title
+      page.drawText("Questions and Answers", {
+        x: margin,
+        y: yPosition,
+        size: fontSize + 8,
         font: font,
         color: rgb(0, 0, 0),
       });
 
-      // Append questions and answers to the PDF
+      yPosition -= fontSize + 20;
+
       questions.forEach((question, index) => {
-        const questionText = `${index + 1}. ${question.text}\n`;
-        const answersText = question.answers.map(answer => `   - ${answer.text}`).join('\n');
-        const fullText = `${questionText}${answersText}\n\n`;
-        const fullTextWithoutNewlines = fullText.replace(/\n/g, ' '); 
-        page.drawText(fullTextWithoutNewlines, {
-          x: 50,
-          y: height - (5 + (index + 1) * 3) * fontSize,
+        if (yPosition < margin + fontSize) {
+          page = pdfDoc.addPage();
+          yPosition = height - margin;
+        }
+
+        const questionText = `${index + 1}. ${question.text}`;
+        page.drawText(questionText, {
+          x: margin,
+          y: yPosition,
           size: fontSize,
           font: font,
           color: rgb(0, 0, 0),
         });
+
+        yPosition -= fontSize + 5;
+
+        question.answers.forEach((answer) => {
+          if (yPosition < margin + fontSize) {
+            page = pdfDoc.addPage();
+            yPosition = height - margin;
+          }
+
+          const answerText = `   - ${answer.text}`;
+          page.drawText(answerText, {
+            x: margin,
+            y: yPosition,
+            size: fontSize,
+            font: font,
+            color: rgb(0, 0, 0),
+          });
+
+          yPosition -= fontSize + 5;
+        });
+
+        yPosition -= fontSize + 10;
       });
 
       // Save the PDF buffer
@@ -120,10 +142,10 @@ const ManageQuiz = () => {
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       formData.append('pdf', blob, filename);
 
-      const response = await axios.post('http://localhost:8080/api/documents/upload', formData, {
+      const response = await axios.post('http://localhost:8000/api/documents/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
       console.log('PDF uploaded successfully:', response.data);
       showFeedbackMessage('PDF generated and uploaded successfully.');

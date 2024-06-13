@@ -28,7 +28,7 @@ const QuizzesAndResults = () => {
   useEffect(() => {
     const fetchPdfs = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/documents');
+        const res = await axios.get('http://localhost:8000/api/documents');
         setPdfs(res.data);
         setLoading(false);
       } catch (err) {
@@ -43,7 +43,7 @@ const QuizzesAndResults = () => {
 
   const handleDownload = async (pdfId, pdfFileName) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/documents/${pdfId}/download`, {
+      const response = await axios.get(`http://localhost:8000/api/documents/${pdfId}/download`, {
         responseType: 'blob', // Specify response type as blob
       });
       
