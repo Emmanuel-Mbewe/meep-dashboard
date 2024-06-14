@@ -103,7 +103,7 @@ const UssdQuiz = () => {
               required
               style={styles.input}
             >
-              <option value="" disabled>Select Form</option>
+              <option value="" disabled>Select Class</option>
               {forms.map(form => (
                 <option key={form._id} value={form._id}>{form.name}</option>
               ))}

@@ -143,22 +143,19 @@ const CreateSubject = () => {
                 required
                 style={inputStyle}
               >
-                <option value="" disabled>Select a Form</option>
-                {classes.map((classe) => (
-                  <option key={classe._id} value={classe._id}>
-                    {classe.name}
-                  </option>
-                ))}
+                <option value="" disabled={classes.length >= 4} style={classes.length >= 4 ? disabledOptionStyle : null}>Select a Form</option>
+                <option value="Form 1" disabled={classes.length >= 4} style={classes.length >= 4 ? disabledOptionStyle : null}>Form 1</option>
+                <option value="Form 2" disabled={classes.length >= 4} style={classes.length >= 4 ? disabledOptionStyle : null}>Form 2</option>
+                <option value="Form 3" disabled={classes.length >= 4} style={classes.length >= 4 ? disabledOptionStyle : null}>Form 3</option>
+                <option value="Form 4" disabled={classes.length >= 4} style={classes.length >= 4 ? disabledOptionStyle : null}>Form 4</option>
               </select>
             </div>
-            <button type="submit" style={classes.length >= 4 ? disabledButtonStyle : buttonStyle}>
+            <button type="submit" style={classes.length >= 4 ? disabledButtonStyle : buttonStyle} disabled={classes.length >= 4}>
               Create Class
             </button>
           </form>
           {classes.length >= 4 && (
-            <p style={{ ...messageStyle, color: 'red' }}>
-              You cannot create more than 4 classes. Maximum reached.
-            </p>
+            <p style={{ ...messageStyle, color: 'red' }}>You cannot create more than 4 classes. Maximum reached.</p>
           )}
           {classError && <p style={{ ...messageStyle, color: 'red' }}>{classError}</p>}
           {classSuccess && <p style={{ ...messageStyle, color: 'green' }}>{classSuccess}</p>}
