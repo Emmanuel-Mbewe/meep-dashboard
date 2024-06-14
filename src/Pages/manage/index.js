@@ -1,4 +1,6 @@
 // pages/content.js
+import Link from 'next/link';
+import Image from "next/image";
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
@@ -9,7 +11,7 @@ const Content = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/content');
+        const response = await fetch('https://meep-back.onrender.com/api/content');
         const data = await response.json();
         setContentList(data);
       } catch (error) {
@@ -26,7 +28,7 @@ const Content = () => {
 
   const deleteContent = async (id) => {
     try {
-      await fetch(`http://localhost:8000/api/content/${id}`, {
+      await fetch(`https://meep-back.onrender.com/api/content/${id}`, {
         method: 'DELETE',
       });
       setContentList(contentList.filter(content => content._id !== id));
@@ -95,7 +97,7 @@ const Content = () => {
       {contentList.map((content) => (
         <div key={content._id} style={styles.contentCard}>
           {content.imagePath && (
-            <img src={`http://localhost:8000/${content.imagePath}`} alt={content.subject} style={styles.contentImage} />
+            <Image src={`https://meep-back.onrender.com/${content.imagePath}`} alt={content.subject} style={styles.contentImage} />
           )}
           <div style={styles.contentDetails}>
             <h3>{content.subject}</h3>
@@ -112,9 +114,9 @@ const Content = () => {
           </div>
           {content.videoPath && (
             <div>
-              <a href={`http://localhost:8000/${content.videoPath}`} target="_blank" rel="noopener noreferrer" style={styles.videoLink}>
+              <Link href={`https://meep-back.onrender.com/${content.videoPath}`} target="_blank" rel="noopener noreferrer" style={styles.videoLink}>
                 View Video
-              </a>
+              </Link>
             </div>
           )}
           <div style={styles.contentIcons}>

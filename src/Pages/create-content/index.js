@@ -79,7 +79,7 @@ const Content = () => {
         formData.append('video', selectedVideo);
       }
 
-      await axios.post('http://localhost:8000/api/content', formData, {
+      await axios.post('https://meep-back.onrender.com/api/content', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

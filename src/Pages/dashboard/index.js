@@ -22,7 +22,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/v1/subject');
+        const response = await axios.get('https://meep-back.onrender.com/api/v1/subject');
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -31,7 +31,7 @@ const Dashboard = () => {
 
     const fetchVideoCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/content/videos/count');
+        const response = await axios.get('https://meep-back.onrender.com/api/content/videos/count');
         setVideoCount(response.data.count);
       } catch (error) {
         console.error('Error fetching video count:', error);
@@ -40,7 +40,7 @@ const Dashboard = () => {
 
     const fetchStudentCount = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/students/count');
+        const response = await axios.get('https://meep-back.onrender.com/api/students/count');
         setStudentCount(response.data.count);
       } catch (error) {
         console.error('Error fetching student count:', error);
@@ -49,7 +49,7 @@ const Dashboard = () => {
 
     const fetchDocumentCount = async () => { // Fetch document count
       try {
-        const response = await axios.get('http://localhost:8000/api/documents/count');
+        const response = await axios.get('https://meep-back.onrender.com/api/documents/count');
         setDocumentCount(response.data.count);
       } catch (error) {
         console.error('Error fetching document count:', error);

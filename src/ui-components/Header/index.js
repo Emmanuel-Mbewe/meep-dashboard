@@ -4,6 +4,7 @@ import {
 import DropdownMenu from "../DropdownMenu";
 import IconWrapper from "../IconWrapper";
 import UserIcon from "../UserIcon";
+import Image from "next/image";
 import styles from "./Header.module.css";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
 import Link from "next/link";
@@ -32,10 +33,10 @@ const NotificationsIcon = ({ onClick = () => {} }) => (
   </IconWrapper>
 );
 
-const NotificationList = ({ img = null, desc = "", datetime = "" }) => {
+const NotificationList = ({ Image = null, desc = "", datetime = "" }) => {
   return (
     <li>
-      {img && <img src={img} alt="" />}
+      {Image && <Image src={Image} alt="" />}
       <div className={styles["single-notification"]}>
         <p>{desc}</p>
         <p>{datetime}</p>

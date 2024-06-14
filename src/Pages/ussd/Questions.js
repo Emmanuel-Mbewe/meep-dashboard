@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UssdNavbar from './UssdNavBar';
 import Modal from '@/components/Modal';
+import Link from 'next/link';
 
 const UssdQuiz = () => {
   const [questionText, setQuestionText] = useState('');
@@ -22,7 +23,7 @@ const UssdQuiz = () => {
     // Fetch forms from the backend
     const fetchForms = async () => {
       try {
-        const formsResponse = await axios.get('http://localhost:8000/api/v1/class');
+        const formsResponse = await axios.get('https://meep-back.onrender.com/api/v1/class');
         setForms(formsResponse.data);
       } catch (error) {
         console.error('Error fetching forms:', error);
@@ -32,7 +33,7 @@ const UssdQuiz = () => {
     // Fetch subjects from the backend
     const fetchSubjects = async () => {
       try {
-        const subjectsResponse = await axios.get('http://localhost:8000/api/v1/subject');
+        const subjectsResponse = await axios.get('https://meep-back.onrender.com/api/v1/subject');
         setSubjects(subjectsResponse.data);
       } catch (error) {
         console.error('Error fetching subjects:', error);
@@ -47,7 +48,7 @@ const UssdQuiz = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/quiz', {
+      const response = await axios.post('https://meep-back.onrender.com/api/quiz', {
         text: questionText,
         answers,
         formId: selectedForm,
@@ -90,7 +91,7 @@ const UssdQuiz = () => {
       <UssdNavbar />
       {forms.length === 0 || subjects.length === 0 ? (
         <div style={styles.messageContainer}>
-          <p style={styles.message}>No forms or courses found. Please <a href="/create-subjects" style={styles.link}>create them</a> first.</p>
+          <p style={styles.message}>No forms or courses found. Please <Link href="/create-subjects" style={styles.link}>create them</Link> first.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} style={styles.form}>

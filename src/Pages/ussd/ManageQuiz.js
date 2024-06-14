@@ -21,7 +21,7 @@ const ManageQuiz = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/quiz');
+        const res = await axios.get('https://meep-back.onrender.com/api/quiz');
         setQuestions(res.data);
         setLoading(false);
       } catch (err) {
@@ -51,7 +51,7 @@ const ManageQuiz = () => {
 
   const confirmDeleteQuestion = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/quiz/${questionToDelete}`);
+      await axios.delete(`https://meep-back.onrender.com/api/quiz/${questionToDelete}`);
       setQuestions(questions.filter(q => q.id !== questionToDelete));
       setIsDeleteModalOpen(false);
       setQuestionToDelete(null);
@@ -142,7 +142,7 @@ const ManageQuiz = () => {
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       formData.append('pdf', blob, filename);
 
-      const response = await axios.post('http://localhost:8000/api/documents/upload', formData, {
+      const response = await axios.post('https://meep-back.onrender.com/api/documents/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

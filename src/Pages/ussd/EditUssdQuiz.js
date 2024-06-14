@@ -19,7 +19,7 @@ const EditUssdQuiz = ({ questionId }) => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/quiz/${questionId}`);
+        const response = await axios.get(`https://meep-back.onrender.com/api/quiz/${questionId}`);
         setQuestionData(response.data);
       } catch (error) {
         console.error('Error fetching question:', error);
@@ -33,7 +33,7 @@ const EditUssdQuiz = ({ questionId }) => {
     event.preventDefault();
 
     try {
-      const response = await axios.put(`http://localhost:8000/api/quiz/${questionId}`, {
+      const response = await axios.put(`https://meep-back.onrender.com/api/quiz/${questionId}`, {
         text: questionData.text,
         answers: questionData.answers,
       });

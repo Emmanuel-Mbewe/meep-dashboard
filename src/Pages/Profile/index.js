@@ -1,5 +1,6 @@
 import HeaderSection from '@/ui-components/HeaderSection';
 import React, { useState } from 'react';
+import Image from "next/image";
 
 const Profile = (props) => {
     const [profilePic, setProfilePic] = useState('/user-pic.jpg'); // Initial profile picture state
@@ -26,7 +27,7 @@ const Profile = (props) => {
             <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
                 {/* Profile Picture */}
                 <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-                    <img src={profilePic} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #4285F4' }} />
+                    <Image src={profilePic} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #4285F4' }} />
                 </div>
                 {/* Profile Picture Upload */}
                 <div style={{ marginBottom: '20px', textAlign: 'center' }}>

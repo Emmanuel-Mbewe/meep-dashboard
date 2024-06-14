@@ -12,7 +12,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/message'); // Corrected endpoint
+        const response = await axios.get('https://meep-back.onrender.com/api/message'); // Corrected endpoint
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -24,7 +24,7 @@ const Messages = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/message');
+      const response = await axios.get('https://meep-back.onrender.com/api/message');
       setMessages(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -34,7 +34,7 @@ const Messages = () => {
   const deleteMessage = async () => {
     setIsDeleting(true); // Set loading state to true
     try {
-      await axios.delete(`http://localhost:8000/api/message/${selectedMessageId}`); // Corrected endpoint
+      await axios.delete(`https://meep-back.onrender.com/api/message/${selectedMessageId}`); // Corrected endpoint
       // After deletion, fetch updated messages
       fetchMessages();
     } catch (error) {

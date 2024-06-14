@@ -16,7 +16,7 @@ const CreateSubject = () => {
     // Fetch classes from the database
     const fetchClasses = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/v1/class');
+        const response = await axios.get('https://meep-back.onrender.com/api/v1/class');
         setClasses(response.data);
       } catch (error) {
         console.error('Error fetching classes:', error);
@@ -37,7 +37,7 @@ const CreateSubject = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/subject', {
+      const response = await axios.post('https://meep-back.onrender.com/api/v1/subject', {
         name: subjectName,
         classId: selectedClassId, // Use captured ID here
       });
@@ -58,7 +58,7 @@ const CreateSubject = () => {
     const selectedClassId = e.target.selectedForm.value; // Access the selected option's value
 
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/class', { name: selectedForm });
+      const response = await axios.post('https://meep-back.onrender.com/api/v1/class', { name: selectedForm });
 
       setClassSuccess(`Class '${response.data.name}' created successfully!`);
       setSelectedForm('');
